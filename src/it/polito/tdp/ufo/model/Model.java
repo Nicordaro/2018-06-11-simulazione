@@ -21,12 +21,14 @@ public class Model {
 	private Map<String, Integer> mapSights;
 	private Graph<String, DefaultEdge> graph;
 	private Map<String, State> stateIdMap;
+	private List<String> stateOfGraphid;
 
 	public Model() {
 		this.dao = new SightingsDAO();
 		this.mapSights = new TreeMap<String, Integer>(dao.getNumberOfSightsByYear());
 		this.graph = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
 		this.stateIdMap = new HashMap<>(dao.getStateMap());
+		this.stateOfGraphid = new ArrayList<>();
 
 	}
 
@@ -84,6 +86,17 @@ public class Model {
 			return stateIdMap.get(choice.toUpperCase());
 		}
 		return null;
+	}
+
+	public List<String> getListaStatiWithRequisitiDiCitta(int secondi) {
+		List<City> cities = new ArrayList<>(dao.getCityWithSeconds(secondi));
+
+		for (City c : cities) {
+			if (!stateOfGraphid.contains(c.getState().toUpperCase())) {
+				stateOfGraphid.add(c.getState());
+			}
+		}
+		return this.stateOfGraphid;
 	}
 
 	// SERVONO PER PULIRE IL GRAFO ALTRIMENTI IL CONNECTIVITY INSPECTOR TIENE

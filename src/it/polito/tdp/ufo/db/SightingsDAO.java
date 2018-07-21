@@ -12,6 +12,7 @@ import java.util.TreeMap;
 
 import it.polito.tdp.ufo.model.City;
 import it.polito.tdp.ufo.model.Edge;
+import it.polito.tdp.ufo.model.EdgeState;
 import it.polito.tdp.ufo.model.Sighting;
 import it.polito.tdp.ufo.model.State;
 
@@ -151,8 +152,112 @@ public class SightingsDAO {
 		}
 	}
 
+	// RESTITUISCE GLI ARCHI STATO1-STATO2 TALI CHE LO STATO 1 SIA QUELLO
+	// SELEZIONATO
+	public List<EdgeState> getEdgeByStateId(String stateId) {
+
+		String sql = "SELECT s1.*, s2.* FROM state as s1, state as s2, neighbor as n WHERE s1.id=n.state1 AND s2.id=n.state2 AND s1.id=?";
+		try {
+			Connection conn = DBConnect.getConnection();
+
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, stateId);
+
+			List<EdgeState> list = new ArrayList<>();
+
+			ResultSet res = st.executeQuery();
+
+//			NOTA: LA LISTA E' DI OGGETTI DI TIPO STATO!!!
+			while (res.next()) {
+				State state1 = new State(res.getString("id"), res.getString("Name"), res.getString("Capital"),
+						res.getDouble("Lat"), res.getDouble("Lng"), res.getDouble("Area"), res.getInt("Population"),
+						res.getString("Neighbors"));
+				State state2 = new State(res.getString("id"), res.getString("Name"), res.getString("Capital"),
+						res.getDouble("Lat"), res.getDouble("Lng"), res.getDouble("Area"), res.getInt("Population"),
+						res.getString("Neighbors"));
+				list.add(new EdgeState(state1, state2));
+
+			}
+
+			conn.close();
+			return list;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	// RESTITUISCE TUTTI GLI ARCHI STATO1-STATO2
+	public List<EdgeState> getAllStateEdge() {
+
+		String sql = "SELECT s1.*, s2.* FROM state as s1, state as s2, neighbor as n WHERE s1.id=n.state1 AND s2.id=n.state2 ORDER BY s1.id";
+		try {
+			Connection conn = DBConnect.getConnection();
+
+			PreparedStatement st = conn.prepareStatement(sql);
+
+			List<EdgeState> list = new ArrayList<>();
+
+			ResultSet res = st.executeQuery();
+
+//				NOTA: LA LISTA E' DI OGGETTI DI TIPO STATO!!!
+			while (res.next()) {
+				State state1 = new State(res.getString("id"), res.getString("Name"), res.getString("Capital"),
+						res.getDouble("Lat"), res.getDouble("Lng"), res.getDouble("Area"), res.getInt("Population"),
+						res.getString("Neighbors"));
+				State state2 = new State(res.getString("id"), res.getString("Name"), res.getString("Capital"),
+						res.getDouble("Lat"), res.getDouble("Lng"), res.getDouble("Area"), res.getInt("Population"),
+						res.getString("Neighbors"));
+				list.add(new EdgeState(state1, state2));
+
+			}
+
+			conn.close();
+			return list;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+//	RESTITUISCE GLI STATI IN CUI LA SOMMA DELLE DURATE DEGLI AVVISTAMENTI SIA SUPERIORE AI SECONDI IN INPUT
+
+	public List<State> getStatesWithSeconds(int seconds) {
+		String sql = "SELECT s2.*, SUM(s.duration) as sum FROM sighting as s, state as s2 WHERE s.state = s2.id GROUP BY state";
+		try {
+			Connection conn = DBConnect.getConnection();
+
+			PreparedStatement st = conn.prepareStatement(sql);
+
+			List<State> list = new ArrayList<>();
+
+			ResultSet res = st.executeQuery();
+
+//			NOTA: LA LISTA E' DI OGGETTI DI TIPO STATO!!!
+			while (res.next()) {
+				if (res.getInt("sum") > seconds) {
+					list.add(new State(res.getString("id"), res.getString("Name"), res.getString("Capital"),
+							res.getDouble("Lat"), res.getDouble("Lng"), res.getDouble("Area"), res.getInt("Population"),
+							res.getString("Neighbors")));
+				}
+			}
+
+			conn.close();
+			return list;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 //	RESTITUISCE LE CITTA' IN CUI LA SOMMA DELLE DURATE DEGLI AVVISTAMENTI SIA SUPERIORE AI SECONDI IN INPUT
-	public List<City> getCity(int seconds) {
+	public List<City> getCityWithSeconds(int seconds) {
 		String sql = "SELECT s.city as city, s.state as state, s.country as country, SUM(s.duration) as sum FROM sighting as s WHERE country = us GROUP BY city";
 		try {
 			Connection conn = DBConnect.getConnection();
