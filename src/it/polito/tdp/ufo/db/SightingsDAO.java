@@ -17,7 +17,7 @@ import it.polito.tdp.ufo.model.Sighting;
 import it.polito.tdp.ufo.model.State;
 
 public class SightingsDAO {
-
+	// PRENDO TUTTI GLI AVVISTAMENTI
 	public List<Sighting> getSightings() {
 		String sql = "SELECT * FROM sighting";
 		try {
@@ -47,6 +47,7 @@ public class SightingsDAO {
 		}
 	}
 
+	// RESTITUISCO IDMAP STATI
 	public Map<String, State> getStateMap() {
 		String sql = "SELECT * FROM state as s";
 		try {
@@ -74,8 +75,7 @@ public class SightingsDAO {
 		}
 	}
 
-//	String sql = "(rs.getString("id"), rs.getString("Name"), rs.getString("Capital"), rs.getDouble("Lat"), rs.getDouble("Lng"), rs.getDouble("Area"), rs.getInt("Population"), rs.getString("Neighbors"))":
-
+//	 RESTITUISCE UN OGGETTO DI TIPO EDGE (idProv, idDest)
 	public List<Edge> getEdges(int year) {
 		String sql = "SELECT Distinct s1.state as source, s2.state as dest FROM sighting as s1, sighting as s2 WHERE s1.country='us' AND s2.country='us' AND s2.state!=s1.state AND s1.state!='' AND s2.state!=''  AND YEAR(s1.datetime)=? and s1.datetime<s2.datetime AND YEAR(s2.datetime)=YEAR(s1.datetime) ORDER BY source";
 		try {
@@ -101,6 +101,7 @@ public class SightingsDAO {
 		}
 	}
 
+//	RESTITUISCE MAPPA CON CHIAVE <anno - #avvistamentiInQuellAnno> a cui è associato come valore un intero che rappresenta l'anno
 	public Map<String, Integer> getNumberOfSightsByYear() {
 		String sql = "SELECT YEAR(s.datetime) as year, COUNT(s.datetime) as sights FROM sighting as s WHERE s.country='us' GROUP BY YEAR(s.datetime) ORDER BY year";
 		try {
@@ -126,6 +127,7 @@ public class SightingsDAO {
 		}
 	}
 
+//	RESTITUISCE UNA LISTA DI CODICI DI STATI PRESENTI NEL DATABASE IN CUI COMPAIANO AVVISTAMENTI IN QUELL'ANNO 
 	public List<String> getStates(int year) {
 		String sql = "SELECT DISTINCT s.state as state FROM sighting as s WHERE s.country='us' AND YEAR(s.datetime)=?";
 		try {
