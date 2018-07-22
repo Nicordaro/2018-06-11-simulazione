@@ -14,6 +14,10 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
 import org.jgrapht.traverse.GraphIterator;
 
+import com.javadocmd.simplelatlng.LatLng;
+import com.javadocmd.simplelatlng.LatLngTool;
+import com.javadocmd.simplelatlng.util.LengthUnit;
+
 import it.polito.tdp.ufo.db.SightingsDAO;
 
 public class Model {
@@ -97,6 +101,12 @@ public class Model {
 			}
 		}
 		return this.stateOfGraphid;
+	}
+
+	public double calcolaDistanza(double lat1, double lng1, double lat2, double lng2) {
+		double weight = LatLngTool.distance(new LatLng(lat1, lng1), new LatLng(lat2, lng2), LengthUnit.KILOMETER);
+		return weight;
+
 	}
 
 	// SERVONO PER PULIRE IL GRAFO ALTRIMENTI IL CONNECTIVITY INSPECTOR TIENE
