@@ -109,6 +109,13 @@ public class Model {
 
 	}
 
+	public double calcolaDistanza(State s1, State s2) {
+		double weight = LatLngTool.distance(new LatLng(s1.getLat(), s1.getLng()), new LatLng(s2.getLat(), s2.getLng()),
+				LengthUnit.KILOMETER);
+		return weight;
+
+	}
+
 	// SERVONO PER PULIRE IL GRAFO ALTRIMENTI IL CONNECTIVITY INSPECTOR TIENE
 	// MEMORIZZATA L'ULTIMA SIZE DEL GRAFO
 
